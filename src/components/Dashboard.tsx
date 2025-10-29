@@ -25,11 +25,11 @@ function Dashboard() {
   useEffect(() => {
     async function fetchUser() {
       try{
-        const res = await api.get("/me");
+        const res = await api.get("/auth/me");
         setUser(res.data.data);
-        console.log("User info: ", res.data.data);
+        console.log("User info dashboard: ", res.data.data);
       } catch(err){
-        console.log("Err: ", err);
+        console.log("Err fetch user: ", err);
       }
     }
     fetchUser();

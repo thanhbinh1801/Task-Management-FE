@@ -2,7 +2,8 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: "http://localhost:8000/api/v1",
-  timeout: 15000
+  timeout: 15000,
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {

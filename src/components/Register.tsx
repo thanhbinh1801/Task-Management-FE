@@ -19,7 +19,7 @@ function Register(props) {
         password,
         name
       });
-      console.log(res);
+      console.log("response register ", res);
       toast.success("Register successful");
     }
     catch {

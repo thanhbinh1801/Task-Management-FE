@@ -9,12 +9,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function UserDropdown({
   user,
 }: {
   user: { name?: string; email?: string };
 }) {
+
+  const handleLogout = async () => {
+    try {
+      // Gọi API logout để xóa cookie ở backend
+      await api.get("/auth/logout");
+      toast.success("Logout successful");
+      // Reload page để trigger check auth lại
+      window.location.reload();
+    } catch {
+      toast.error("Logout failed");
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -34,12 +48,7 @@ export default function UserDropdown({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          onClick={() => {
-            localStorage.removeItem("access-token");
-            window.location.reload();
-          }}
-        >
+        <DropdownMenuItem onClick={handleLogout}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
