@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
-import { api } from "./lib/api";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Dashboard from "./pages/Dashboard";
+// import { api } from "./lib/api";
 
 export function App() {
   const [view, setView] = useState<"login" | "register" | "dashboard">("login");
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    async function fetchUser() {
-      const res = await api.get("/auth/me");
-      console.log("Fetch user on App.tsx: ", res.data);
-      if(res.status === 200){
-        setView("dashboard");
-      } else {
-        setView("login");
-      }
-    }
-    fetchUser();
-  }, []);
+  //   async function fetchUser() {
+  //     const res = await api.get("/auth/me");
+  //     console.log("Fetch user on App.tsx: ", res.data);
+  //     if(res.status === 200){
+  //       setView("dashboard");    
+  //     } else {
+  //       setView("login");
+  //     }
+  //   }
+  //   fetchUser();
+  // }, []);
 
   const goToLogin = () => {
     setView("login");
