@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { toast } from "sonner";
 
 export default function UserDropdown({
@@ -21,7 +21,7 @@ export default function UserDropdown({
   const handleLogout = async () => {
     try {
       // Gọi API logout để xóa cookie ở backend
-      await api.get("/auth/logout");
+      await apiClient.get("/auth/logout");
       toast.success("Logout successful");
       // Reload page để trigger check auth lại
       window.location.reload();
