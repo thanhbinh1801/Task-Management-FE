@@ -90,11 +90,11 @@ export function CreateBoardDialog({
 
           <div className="space-y-3 mb-4">
             <div className="space-y-1.5">
-              <label htmlFor="title" className="text-xs font-medium">
+              <label htmlFor="name" className="text-xs font-medium">
                 Board Name
               </label>
               <Input
-                id="title"
+                id="name"
                 value={nameBoard}
                 onChange={(e) => setNameBoard(e.target.value)}
                 placeholder="Enter board name"
