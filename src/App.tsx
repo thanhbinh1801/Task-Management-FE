@@ -8,11 +8,13 @@ import WorkspaceDetail from "./pages/dashboard/WorkspaceDetail";
 import NotFound from "./pages/auth/NotFound";
 import WorkspaceLayout from "./pages/layout/WorkpaceLayout";
 import Board from "./pages/board/board";
+import OAuthCallback from "./pages/auth/OAuthCallback"; 
 
 export function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="/register" element={<Register />} />
       <Route
         path="/dashboard"
