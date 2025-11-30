@@ -126,7 +126,7 @@ function Dashboard() {
                       key={b.id}
                       className="flex justify-between items-center border rounded-md p-2 hover:bg-muted/50"
                     >
-                      <span className="text-sm font-medium">{b.title}</span>
+                      <span className="text-sm font-medium">{b.name}</span>
                     </div>
                   ))}
                 </div>

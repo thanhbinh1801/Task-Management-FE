@@ -10,7 +10,7 @@ export type Workspace = {
 
 export type Board = {
   id: string;
-  title: string;
+  name: string;
 };
 
 export const useWorkspace = () => {
