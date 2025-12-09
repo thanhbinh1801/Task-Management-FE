@@ -1,69 +1,13 @@
-import { useEffect, useState } from "react";
-import React from "react";
-import {
-  ItemGroup,
-  ItemHeader,
-  ItemContent,
-  ItemTitle,
-  Item,
-  ItemDescription,
-  ItemSeparator,
-} from "../../components/ui/item.tsx";
-import UserDropdown from "../UserDropdown.tsx";
-import { apiClient } from "@/lib/api.ts";
-import { useWorkspace } from "@/hooks/useWorkspace.ts";
-import type { Workspace } from "@/hooks/useWorkspace.ts";
-import { Loader, ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useSidebar } from "@/hooks/useSidebar.ts";
-import { CreateWorkspaceDialog } from "./createWorkspace.tsx";
 import Sidebar from "@/components/sidebar/sidebar.tsx";
-import { useBoard } from "@/hooks/useBoard.ts";
-import { CreateBoardDialog } from "./createBoard.tsx";
+import WorkspaceList from "@/components/workspaces/WorkspaceList.tsx";
 
 function Dashboard() {
-  const [user, setUser] = useState<{ name?: string; email?: string }>({});
-  const {
-    workspaces,
-    loading,
-    error,
-    setError,
-    createWorkspace,
-    fetchWorkspaces,
-  } = useWorkspace();
-  const { createBoard } = useBoard();
+
   const { isOpen, toggleSidebar } = useSidebar();
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await apiClient.get("/auth/me");
-        setUser(res.data.data);
-      } catch {
-        setError("Failed to load user.");
-      }
-    }
-    fetchUser();
-  }, []);
 
-  async function handleCreateBoard(data: {
-    nameBoard: string;
-    workspaceId: string;
-  }) {
-    await createBoard(data);
-    await fetchWorkspaces();
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader className="animate-spin" size={48} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="p-6"> Error loading workspaces: {error} </div>;
-  }
 
   return (
     <div className="min-h-screen flex relative">
@@ -98,49 +42,8 @@ function Dashboard() {
       >
         <div className="flex justify-between items-center mb-8 border border-black-200 px-2 py-3 ">
           <h1 className="text-3xl font-bold">Dashboard</h1>
-          <UserDropdown user={user} />
         </div>
-
-        <h2 className="text-2xl font-bold pl-4">Workspaces</h2>
-        <ItemGroup className="divide-y pl-4">
-          {workspaces.map((ws: Workspace) => (
-            <React.Fragment key={ws.id}>
-              <Item className="justify-between">
-                <ItemContent>
-                  <ItemHeader>
-                    <ItemTitle>{ws.name}</ItemTitle>
-                  </ItemHeader>
-
-                  <ItemDescription>
-                    <span className="mr-4">
-                      <span className="">Visibility:</span>{" "}
-                      {ws.visibility ?? "—"}
-                    </span>
-                  </ItemDescription>
-                </ItemContent>
-
-                <div className="mt-3 w-full pl-6 space-y-2">
-                  <span className="text-sm font-medium">Boards:</span>
-                  {ws.boards?.map((b) => (
-                    <div
-                      key={b.id}
-                      className="flex justify-between items-center border rounded-md p-2 hover:bg-muted/50"
-                    >
-                      <span className="text-sm font-medium">{b.name}</span>
-                    </div>
-                  ))}
-                </div>
-                <CreateBoardDialog
-                  createBoard={handleCreateBoard}
-                  workspaces={workspaces}
-                  defaultWorkspaceId={ws.id}
-                />
-              </Item>
-              <ItemSeparator />
-            </React.Fragment>
-          ))}
-        </ItemGroup>
-        <CreateWorkspaceDialog createWorkspace={createWorkspace} />
+        <WorkspaceList></WorkspaceList>
       </div>
     </div>
   );

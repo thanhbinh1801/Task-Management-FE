@@ -3,25 +3,25 @@ import { useState } from "react";
 
 export type Board = {
   id: string;
-  nameBoard: string; 
+  name: string; 
   lists: List[],
 };
 
 export type List = {
   id: string;
-  nameList:string;
+  name:string;
   position: number;
   cards: Card[]
 }
 
 export type Card = {
   id: string;
-  nameCard: string;
+  name: string;
   isComplete: boolean
 }
 
 export const useBoard = () => {
-  const [board, setBoard] = useState<Board>({});
+  const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null >(null);
 
@@ -51,5 +51,5 @@ export const useBoard = () => {
     }
   }
 
-  return { board,loading, error, createBoard, fetchBoardById };
+  return { board, loading, error, createBoard, fetchBoardById };
 }
