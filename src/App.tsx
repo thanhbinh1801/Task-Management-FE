@@ -3,11 +3,12 @@ import Register from "./pages/auth/Register";
 import Dashboard from "./pages/dashboard/Dashboard";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
-import Workspaces from "./pages/dashboard/Workspace";
-import WorkspaceDetail from "./pages/dashboard/WorkspaceDetail";
 import NotFound from "./pages/auth/NotFound";
-import WorkspaceLayout from "./pages/layout/WorkpaceLayout";
-import Board from "./pages/board/board";
+import OAuthCallback from "./pages/auth/OauthCallback";
+import DashboardLayout from "./pages/layout/DashboardLayout";
+import WorkspaceItem from "./components/workspaces/WorkspaceItem";
+import BoardItem from "./components/board/BoardItem";
+import BoardLayout from "./pages/layout/BoardLayout";
 
 export function App() {
   return (
@@ -15,21 +16,27 @@ export function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
-        path="/dashboard"
+        path="/"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <DashboardLayout />
           </ProtectedRoute>
         }
-      />
-      <Route path="/workspace" element={<WorkspaceLayout />}>
-        <Route path="" element={<Workspaces />} />
-        <Route path=":id" element={<WorkspaceDetail />} />
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="workspace/:workspaceId" element={<WorkspaceItem />} />
       </Route>
+
       <Route
-        path="/workspace/:workspaceId/board/:boardId"
-        element={<Board />}
-      />
+        path="workspace/:workspaceId/board/:boardId"
+        element={
+          <ProtectedRoute>
+            <BoardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<BoardItem />} />
+      </Route>
 
       <Route path="*" element={<NotFound />} />
     </Routes>

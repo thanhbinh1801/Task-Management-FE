@@ -17,7 +17,6 @@ export default function UserDropdown({
 }: {
   user: { name?: string; email?: string };
 }) {
-
   const handleLogout = async () => {
     try {
       // Gọi API logout để xóa cookie ở backend
@@ -34,7 +33,7 @@ export default function UserDropdown({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2">
-          {user.name || "Account"}
+          {user.name}
         </Button>
       </DropdownMenuTrigger>
 
@@ -48,9 +47,7 @@ export default function UserDropdown({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={handleLogout}>
-          Log out
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
