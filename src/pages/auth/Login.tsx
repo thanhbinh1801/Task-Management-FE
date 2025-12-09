@@ -14,7 +14,7 @@ function Login() {
   // Fix: Dùng useEffect thay vì gọi trực tiếp trong render
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, []);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -27,7 +27,7 @@ function Login() {
       });
       toast.success("Login successful");
       localStorage.setItem("access-token", res.data.accessToken);
-      navigate("/dashboard");
+      navigate("/");
     } catch {
       toast.error("Login failed");
     }

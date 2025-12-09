@@ -1,8 +1,24 @@
 import { useWorkspace } from "@/hooks/useWorkspace";
 import type { Workspace } from "@/hooks/useWorkspace";
+import UserDropdown from "../user/UserDropdown.tsx";
+import { useState, useEffect } from "react";
+import { apiClient } from "@/lib/api.ts";
 
 export default function Sidebar() {
   const { workspaces } = useWorkspace();
+  const [user, setUser] = useState<{ name?: string; email?: string }>({});
+
+  useEffect(() => {
+  async function fetchUser() {
+    try {
+      const res = await apiClient.get("/auth/me");
+      setUser(res.data.data);
+    } catch {
+      setError("Failed to load user.");
+    }
+  }
+  fetchUser();
+}, []);
   
   return (
     <div>
@@ -35,6 +51,7 @@ export default function Sidebar() {
           </div>
         ))}
       </div>
+      <UserDropdown user={user} />
     </div>
   );
 }
