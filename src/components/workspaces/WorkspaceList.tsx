@@ -10,7 +10,7 @@ import {
 } from "../../components/ui/item.tsx";
 import { useWorkspace } from "@/hooks/useWorkspace.ts";
 import type { Workspace } from "@/hooks/useWorkspace.ts";
-import { Loader, Plus } from "lucide-react";
+import { Loader } from "lucide-react";
 import { CreateWorkspaceDialog } from "@/components/workspaces/createWorkspace.tsx";
 import { CreateBoardDialog } from "../board/createBoard.tsx";
 import { useBoard } from "@/hooks/useBoard.ts";
@@ -49,12 +49,11 @@ export default function WorkspaceList() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold pl-4 mb-6"> Your workspaces</h2>
-      <CreateWorkspaceDialog createWorkspace={createWorkspace} />
+      <h2 className="text-2xl font-bold pl-4">Workspaces</h2>
       <ItemGroup className="divide-y pl-4">
         {workspaces.map((ws: Workspace) => (
           <React.Fragment key={ws.id}>
-            <Item className="pb-6">
+            <Item className="justify-between">
               <ItemContent>
                 <ItemHeader>
                   <ItemTitle>{ws.name}</ItemTitle>
@@ -67,38 +66,30 @@ export default function WorkspaceList() {
                 </ItemDescription>
               </ItemContent>
 
-              {/* Board Grid */}
-              <div className="mt-6 w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {/* Existing Boards */}
-                  {ws.boards?.map((b) => (
-                    <Link
-                      key={b.id}
-                      to={`/workspace/${ws.id}/board/${b.id}`}
-                      className="block"
-                    >
-                      <div className="h-32 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center p-4">
-                        <span className="text-white font-semibold text-center text-lg">
-                          {b.name}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-
-                  <div className="h-32 ">
-                    <CreateBoardDialog
-                      createBoard={handleCreateBoard}
-                      workspaces={workspaces}
-                      defaultWorkspaceId={ws.id}
-                    />
-                  </div>
-                </div>
+              <div className="mt-3 w-full pl-6 space-y-2">
+                <span className="text-sm font-medium">Boards:</span>
+                {ws.boards?.map((b) => (
+                  <Link
+                    key={b.id}
+                    to={`/workspace/${ws.id}/board/${b.id}`}
+                    className="flex justify-between items-center border rounded-md p-2 hover:bg-muted/50"
+                  >
+                    <span className="text-sm font-medium">{b.name}</span>
+                  </Link>
+                ))}
               </div>
+              <CreateBoardDialog
+                createBoard={handleCreateBoard}
+                workspaces={workspaces}
+                defaultWorkspaceId={ws.id}
+              />
             </Item>
             <ItemSeparator />
           </React.Fragment>
         ))}
       </ItemGroup>
+
+      <CreateWorkspaceDialog createWorkspace={createWorkspace} />
     </>
   );
 }
