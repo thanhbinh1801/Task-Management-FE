@@ -68,11 +68,14 @@ export function CreateBoardDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" type="button" className="text-sm">
-          Create Board
+        <Button
+          variant="outline"
+          type="button"
+          className="h-32 w-full bg-gray-200 hover:bg-gray-300 rounded-lg border-0 text-gray-600 font-medium text-base"
+        >
+          Create new board
         </Button>
       </DialogTrigger>
-
       <DialogContent className="max-w-[380px] p-5">
         <form onSubmit={handleSubmit}>
           <DialogHeader className="mb-4">

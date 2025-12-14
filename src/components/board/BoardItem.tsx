@@ -1,6 +1,7 @@
 import { useBoard } from "@/hooks/useBoard";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
+import { Plus } from "lucide-react";
 
 export default function BoardItem() {
   const { workspaceId, boardId } = useParams<{
@@ -8,41 +9,85 @@ export default function BoardItem() {
     boardId: string;
   }>();
   const { board, fetchBoardById } = useBoard();
+
   useEffect(() => {
     fetchBoardById(workspaceId!, boardId!);
     console.log("Lists in BoardItem:", board);
   }, [workspaceId, boardId]);
 
+  if (!board) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-gray-500">Loading board...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      {!board ? (
-        <div>Không có board nào.</div>
-      ) : (
-        <div key={board.id} className="border rounded p-4 shadow">
-          <h2 className="text-xl font-bold mb-2">Board: {board.name}</h2>
-          {!board.lists || board.lists.length === 0 ? (
-            <div className="ml-4">Không có list nào.</div>
-          ) : (
+    <div className="min-h-screen bg-gray-50">
+      {/* Board Header */}
+      <div className="px-6 py-4 bg-blue-600">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-bold text-white">{board.name}</h1>
+        </div>
+      </div>
+
+      {/* Lists Container */}
+      <div className="px-6 pb-6 overflow-x-auto">
+        <div className="flex gap-4 items-start">
+          {/* Lists */}
+          {board.lists && board.lists.length > 0 ? (
             board.lists.map((list) => (
-              <div key={list.id} className="ml-4 mb-4">
-                <h3 className="text-lg font-semibold">List: {list.name}</h3>
-                {!list.cards || list.cards.length === 0 ? (
-                  <div className="ml-4">Không có card nào.</div>
-                ) : (
-                  <ul className="ml-4 list-disc">
-                    {list.cards.map((card) => (
-                      <li key={card.id} className="py-1">
-                        Card: {card.name}{" "}
-                        {card.isComplete ? "(Hoàn thành)" : ""}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+              <div
+                key={list.id}
+                className="bg-gray-100 rounded-xl p-3 w-[120px] h-[200px] flex-shrink-0"
+              >
+                {/* List Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-800">{list.name}</h3>
+                </div>
+
+                {/* Cards */}
+                <div className="space-y-2">
+                  {list.cards && list.cards.length > 0 ? (
+                    list.cards.map((card) => (
+                      <div
+                        key={card.id}
+                        className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                      >
+                        <p className="text-sm text-gray-800">{card.name}</p>
+                        {card.isComplete && (
+                          <span className="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">
+                            Completed
+                          </span>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-gray-500 text-center py-2">
+                      No cards yet
+                    </div>
+                  )}
+                </div>
+
+                {/* Add Card Button */}
+                <button className="w-full mt-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2">
+                  <Plus size={16} />
+                  <span className="text-sm">Add a card</span>
+                </button>
               </div>
             ))
+          ) : (
+            <div className="text-gray-500">No lists yet</div>
           )}
+
+          {/* Add Another List Button */}
+          <button className="bg-gray-100 hover:bg-gray-200 rounded-xl p-3 w-80 flex-shrink-0 transition-colors flex items-center gap-2 text-gray-700">
+            <Plus size={18} />
+            <span className="font-medium">Add another list</span>
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }

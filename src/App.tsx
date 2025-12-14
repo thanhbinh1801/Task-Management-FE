@@ -5,10 +5,10 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import NotFound from "./pages/auth/NotFound";
 import OAuthCallback from "./pages/auth/OauthCallback";
-import DashboardLayout from "./pages/layout/DashboardLayout";
 import WorkspaceItem from "./components/workspaces/WorkspaceItem";
 import BoardItem from "./components/board/BoardItem";
-import BoardLayout from "./pages/layout/BoardLayout";
+import BoardLayout from "./layout/BoardLayout";
+import AppLayout from "./layout/AppLayout";
 
 export function App() {
   return (
@@ -19,7 +19,7 @@ export function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardLayout />
+            <AppLayout />
           </ProtectedRoute>
         }
       >
