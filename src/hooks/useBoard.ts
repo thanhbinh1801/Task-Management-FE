@@ -1,24 +1,8 @@
 import { apiClient } from "@/lib/api.ts";
 import { useState } from "react";
+import type { Board } from "@/components/type/type.ts";
 
-export type Board = {
-  id: string;
-  name: string; 
-  lists: List[],
-};
 
-export type List = {
-  id: string;
-  name:string;
-  position: number;
-  cards: Card[]
-}
-
-export type Card = {
-  id: string;
-  name: string;
-  isComplete: boolean
-}
 
 export const useBoard = () => {
   const [board, setBoard] = useState<Board | null>(null);
@@ -51,5 +35,5 @@ export const useBoard = () => {
     }
   }
 
-  return { board, loading, error, createBoard, fetchBoardById };
+  return { board, setBoard, loading, error, createBoard, fetchBoardById };
 }

@@ -1,9 +1,9 @@
 import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 
-const BASE_URL = import.meta.env.VITE_URL_BACKEND;
+// const BASE_URL = import.meta.env.URL_BACKEND;
 
 export const axiosClient = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: "http://localhost:8000/api/v1" ,
   timeout: 15000,
   withCredentials: true // Quan trọng: để gửi cookie refreshToken
 });
