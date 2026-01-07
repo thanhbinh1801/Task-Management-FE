@@ -9,11 +9,11 @@ export function useBoardDnD(
   workspaceId?: string,
   boardId?: string
 ) {
-  
+
   if (!board) {
-    return { handleDragEnd: () => {} };
+    return { handleDragEnd: () => { } };
   }
-  
+
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over) return;
@@ -27,33 +27,33 @@ export function useBoardDnD(
 
       setBoard(prevBoard => {
         if (!prevBoard || !prevBoard.lists) return prevBoard;
-        
+
         // Sort theo position trước
         const sortedLists = [...prevBoard.lists].sort((a, b) => a.position - b.position);
-        
+
         const oldIndex = sortedLists.findIndex(l => l && l.id === active.id);
         const newIndex = sortedLists.findIndex(l => l && l.id === over.id);
-        
+
         if (oldIndex === -1 || newIndex === -1) return prevBoard;
-        
+
         // Sắp xếp lại mảng
         const newLists = arrayMove(sortedLists, oldIndex, newIndex);
-        
+
         // Tính position mới cho item vừa di chuyển
         const prevList = newLists[newIndex - 1];
         const nextList = newLists[newIndex + 1];
-        
+
         const newPosition = calculateNewPosition(
           prevList?.position,
           nextList?.position
         );
-        
+
         // Tạo object mới với position mới (KHÔNG mutate)
         newLists[newIndex] = {
           ...newLists[newIndex],
           position: newPosition,
         };
-        
+
         // Gọi API update
         if (workspaceId && boardId) {
           boardApi.updateList({
@@ -65,57 +65,68 @@ export function useBoardDnD(
             console.error('Failed to update list position:', err);
           });
         }
-        
+
         return { ...prevBoard, lists: newLists };
       });
     }
 
-    // ===== KÉO CARD =====
+    // ===== KÉO CARD =====     
     if (activeType === "CARD") {
       const fromListId = active.data.current.listId;
-      const toListId = over.data.current.listId;
       
+      // Xác định toListId: nếu over là CARD thì lấy từ data, nếu là LIST thì lấy over.id
+      const toListId = overType === "CARD" ? over.data.current.listId : over.id;
+
       if (fromListId === toListId && active.id === over.id) return;
 
       setBoard(prevBoard => {
         if (!prevBoard || !prevBoard.lists) return prevBoard;
-        
-        const newLists = structuredClone(prevBoard.lists);
-        
+
+        // Clone hiệu quả hơn structuredClone
+        const newLists = prevBoard.lists.map(list => ({
+          ...list,
+          cards: list.cards ? [...list.cards] : []
+        }));
+
         const fromList = newLists.find(l => l && l.id === fromListId);
         const toList = newLists.find(l => l && l.id === toListId);
-        
+
         if (!fromList || !toList || !fromList.cards || !toList.cards) return prevBoard;
-        
-        // Sort cards theo position
+
+        // Sort cards theo position 1 LẦN DUY NHẤT
         fromList.cards.sort((a, b) => a.position - b.position);
-        toList.cards.sort((a, b) => a.position - b.position);
-        
+        if (fromListId !== toListId) {
+          toList.cards.sort((a, b) => a.position - b.position);
+        }
+
         const fromIndex = fromList.cards.findIndex(c => c.id === active.id);
-        const toIndex = toList.cards.findIndex(c => c.id === over.id);
         
+        // Xác định toIndex: nếu over là CARD thì tìm vị trí card đó, nếu là LIST thì thêm vào cuối
+        const toIndex = overType === "CARD" 
+          ? toList.cards.findIndex(c => c.id === over.id)
+          : toList.cards.length;
+
         // Di chuyển card
         const [movedCard] = fromList.cards.splice(fromIndex, 1);
         toList.cards.splice(toIndex, 0, movedCard);
-        
+
         // Tính position mới
         const prevCard = toList.cards[toIndex - 1];
         const nextCard = toList.cards[toIndex + 1];
-        
+
         const newPosition = calculateNewPosition(
           prevCard?.position,
           nextCard?.position
         );
-        
-        // Tạo object mới với position mới (KHÔNG mutate)
+
+        // Tạo object mới với position mới
         toList.cards[toIndex] = {
           ...movedCard,
           position: newPosition,
         };
-        
-        // Sort lại cards theo position sau khi update
-        toList.cards.sort((a, b) => a.position - b.position);
-        
+
+        // KHÔNG sort lại - position đã đúng
+
         // Gọi API
         if (workspaceId && boardId) {
           console.log('Calling updateCard API:', { workspaceId, boardId, fromListId, toListId, cardId: movedCard.id, position: newPosition });
@@ -133,7 +144,7 @@ export function useBoardDnD(
         } else {
           console.warn('Cannot call API: workspaceId or boardId is missing', { workspaceId, boardId });
         }
-        
+
         return { ...prevBoard, lists: newLists };
       });
     }
