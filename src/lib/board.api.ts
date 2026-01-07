@@ -1,6 +1,23 @@
 import { apiClient } from "./api";
 
 export const boardApi = {
+  createList(data: { workspaceId: string; boardId: string; nameList: string }) {
+    return apiClient.post(
+      `workspace/${data.workspaceId}/board/${data.boardId}/list`,
+      { nameList: data.nameList }
+    );
+  },
+  createCard(data: { 
+    workspaceId: string; 
+    boardId: string; 
+    listId: string; 
+    nameCard: string 
+  }) {
+    return apiClient.post(
+      `workspace/${data.workspaceId}/board/${data.boardId}/list/${data.listId}/card`,
+      { nameCard: data.nameCard }
+    );
+  },
   updateList ( data: { 
     workspaceId: string, 
     boardId: string, 
