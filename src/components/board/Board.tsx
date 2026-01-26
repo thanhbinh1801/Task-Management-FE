@@ -1,17 +1,20 @@
-import { useBoard } from "@/hooks/useBoard";
+import { useBoardStore } from "@/store/useBoardStore";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Loader } from "lucide-react";
 
 export default function Board() {
   const { workspaceId, boardId } = useParams();
-  const { board, loading, error, fetchBoardById } = useBoard();
+  const currentBoard = useBoardStore((state) => state.currentBoard);
+  const isLoading = useBoardStore((state) => state.isLoading);
+  const error = useBoardStore((state) => state.error);
+  const fetchBoardById = useBoardStore((state) => state.fetchBoardById);
 
   useEffect(() => {
     if (workspaceId && boardId) {
       fetchBoardById(workspaceId, boardId);
     }
-  }, [workspaceId, boardId]);
+  }, [workspaceId, boardId, fetchBoardById]);
 
   if (loading) {
     return (
@@ -31,11 +34,11 @@ export default function Board() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold">{board[0]?.nameBoard}</h1>
+        <h1 className="text-3xl font-bold">{currentBoard.nameBoard}</h1>
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4">
-        {board[0]?.lists?.map((list) => (
+        {currentBoard.lists?.map((list) => (
           <div
             key={list.id}
             className="bg-gray-100 rounded-lg p-4 min-w-[300px] max-w-[300px]"
