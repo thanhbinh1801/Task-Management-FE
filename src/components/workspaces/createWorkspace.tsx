@@ -13,10 +13,11 @@ import { Input } from "@/components/ui/input"
 import { useState, useRef } from "react";
 
 interface CreateWorkspaceDialogProps {
-  createWorkspace: (data: {name: string; visibility?: string}) => Promise<void>;
+  createWorkspace: (name: string, visibility?: string) => Promise<any>;
+  variant?: "default" | "hero"; 
 }
 
-export function CreateWorkspaceDialog({ createWorkspace }: CreateWorkspaceDialogProps) {
+export function CreateWorkspaceDialog({ createWorkspace, variant = "default" }: CreateWorkspaceDialogProps) {
   const [name, setName] = useState("");
   const [visibility, setVisibility] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +28,7 @@ export function CreateWorkspaceDialog({ createWorkspace }: CreateWorkspaceDialog
     setError("");
     
     try {
-      await createWorkspace({ name, visibility });
+      await createWorkspace(name, visibility);
       setName("");
       setVisibility("");
       closeRef.current?.click();
@@ -37,11 +38,15 @@ export function CreateWorkspaceDialog({ createWorkspace }: CreateWorkspaceDialog
     }
   }
 
+  const buttonClass = variant === "hero" 
+    ? "bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-lg"
+    : "text-sm";
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" type="button" className="text-sm">
-          Create Workspace
+        <Button variant="outline" type="button" className={buttonClass}>
+          {variant === "hero" ? "Tạo Workspace Đầu Tiên" : "Create Workspace"}
         </Button>
       </DialogTrigger>
       

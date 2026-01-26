@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
-import type { Workspace } from "@/hooks/useWorkspace";
+import type { Workspace } from "@/store/useWorkSpaceStore";
 
 interface CreateBoardDialogProps {
   createBoard: (data: {
@@ -48,16 +48,9 @@ export function CreateBoardDialog({
     }
 
     try {
-      console.log(
-        "Creating board - Title:",
-        nameBoard,
-        "WorkspaceId:",
-        workspaceId
-      );
       await createBoard({ nameBoard, workspaceId });
       setNameBoard("");
       setWorkspaceId(defaultWorkspaceId);
-      closeRef.current?.click();
       closeRef.current?.click();
     } catch (err) {
       console.error("Error creating board:", err);
@@ -68,13 +61,9 @@ export function CreateBoardDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          type="button"
-          className="h-32 w-full bg-gray-200 hover:bg-gray-300 rounded-lg border-0 text-gray-600 font-medium text-base"
-        >
-          Create new board
-        </Button>
+        <button className="h-20 w-full bg-gray-200 hover:bg-gray-300 rounded-lg border-0 text-gray-600 font-medium text-sm transition-colors">
+          Tạo bảng mới
+        </button>
       </DialogTrigger>
       <DialogContent className="max-w-[380px] p-5">
         <form onSubmit={handleSubmit}>
