@@ -4,29 +4,25 @@ import { Input } from "../../components/ui/input";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { apiClient } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 function Login() {
   const navigate = useNavigate();
+  const { login, isLoading, error } = useAuthStore();
   const [email, setEmail] = useState("thanhbinhnkd@gmail.com");
   const [password, setPassword] = useState("password123");
 
-  // Fix: Dùng useEffect thay vì gọi trực tiếp trong render
   useEffect(() => {
     if (localStorage.getItem("access-token")) {
       navigate("/");
     }
-  }, []);
+  }, [navigate]);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
-      console.log(email, password);
-      const res = await apiClient.post("/auth/login", {
-        email,
-        password,
-      });
+      await login(email, password);
       toast.success("Login successful");
-      localStorage.setItem("access-token", res.data.accessToken);
       navigate("/");
     } catch {
       toast.error("Login failed");
@@ -77,11 +73,15 @@ function Login() {
               className="h-11"
             />
           </div>
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white h-11 mt-2"
             type="submit"
+            disabled={isLoading}
           >
-            Log in
+            {isLoading ? "Logging in..." : "Log in"}
           </Button>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

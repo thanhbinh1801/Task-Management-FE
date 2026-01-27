@@ -1,4 +1,3 @@
-// src/components/UserDropdown.tsx
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -9,35 +8,46 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { apiClient } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
-export default function UserDropdown({
-  user,
-}: {
-  user: { name?: string; email?: string };
-}) {
+export default function UserDropdown() {
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+
   const handleLogout = async () => {
     try {
-      // Gọi API logout để xóa cookie ở backend
-      await apiClient.get("/auth/logout");
+      logout();
       toast.success("Logout successful");
-      // Reload page để trigger check auth lại
-      window.location.reload();
+      navigate("/login");
     } catch {
       toast.error("Logout failed");
     }
   };
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          {user.name}
-        </Button>
+        <div className="px-3 py-3 hover:bg-gray-100 rounded cursor-pointer border-t pt-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">{user.name.charAt(0).toUpperCase()}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-sm truncate">{user.name}</div>
+              <div className="text-xs text-gray-500 truncate">{user.email}</div>
+            </div>
+          </div>
+        </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-72">
+      <DropdownMenuContent side="top" align="start" className="w-72 mb-2">
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => console.log("Profile & visibility")}>
