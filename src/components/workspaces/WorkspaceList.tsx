@@ -1,20 +1,6 @@
 import React from "react";
-<<<<<<< HEAD
-import {
-  ItemGroup,
-  ItemHeader,
-  ItemContent,
-  ItemTitle,
-  Item,
-  ItemDescription,
-  ItemSeparator,
-} from "../../components/ui/item.tsx";
-import { useWorkspace } from "@/hooks/useWorkspace.ts";
-import type { Workspace } from "@/hooks/useWorkspace.ts";
-=======
 import { useWorkspaceStore } from "@/store/useWorkSpaceStore";
 import type { Workspace } from "@/store/useWorkSpaceStore";
->>>>>>> 92dd1e2 (dung store de luu cac state chung thay cho dung cac hook rieng le, sua ít giao dien sidebar)
 import { Loader } from "lucide-react";
 import { CreateWorkspaceDialog } from "@/components/workspaces/createWorkspace.tsx";
 import { CreateBoardDialog } from "../board/createBoard.tsx";
