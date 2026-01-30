@@ -40,7 +40,7 @@ export const useWorkspaceStore = create<WorkSpaceState>()(
             fetchWorkspaces: async () => {
                 set({ isLoading: true, error: null });
                 try { 
-                    const res = await apiClient.get('/workspace');
+                    const res = await apiClient.get<{ data: Workspace[] }>('/workspace');
                     set({
                         workspaces: res.data.data || [],
                         isLoading: false,

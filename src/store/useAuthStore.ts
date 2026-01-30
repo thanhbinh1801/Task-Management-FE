@@ -8,7 +8,8 @@ interface User {
     id: string;
     email: string;
     name?: string;
-    avatar?: string;
+    avatarUrl?: string;
+    bio?: string;
 }
 
 interface AuthState {
@@ -21,6 +22,7 @@ interface AuthState {
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     fetchMe: () => Promise<void>;
+    updateAvatar: (file: File) => Promise<void>;
     clearError: () => void;
 }
 
@@ -42,10 +44,10 @@ export const useAuthStore = create<AuthState>()(
                 login: async(email: string, password: string) => {
                     set({ isLoading: true, error: null });
                     try {
-                        const res = await apiClient.post("/auth/login", { email, password });
+                        const res = await apiClient.post<{ accessToken: string }>("/auth/login", { email, password });
                         localStorage.setItem("access-token", res.data.accessToken);
 
-                        const meRes = await apiClient.get("/auth/me");
+                        const meRes = await apiClient.get<{ data: User }>("/auth/me");
 
                         set({
                             user: meRes.data.data,
@@ -78,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
                 fetchMe: async () => {
                     set({ isLoading: true });
                     try {
-                        const res = await apiClient.get('/auth/me');
+                        const res = await apiClient.get<{ data: User }>('/auth/me');
                         set({ 
                             user: res.data.data,
                             isAuthenticated: true,
@@ -90,6 +92,41 @@ export const useAuthStore = create<AuthState>()(
                             isLoading: false,
                             error: 'Failed to fetch user info'
                         });
+                    }
+                },
+
+                updateAvatar: async (file: File) => {
+                    const currentUser = useAuthStore.getState().user;
+                    if (!currentUser?.id) {
+                        throw new Error('User not found');
+                    }
+
+                    set({ isLoading: true, error: null });
+                    try {
+                        const formData = new FormData();
+                        formData.append('avatar', file);
+
+                        const avatarResponse = await apiClient.put<{ data: User }>(`/user/${currentUser.id}/avatar`, formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        });
+
+                        // Update user with avatar data from response
+                        const updatedUser = avatarResponse.data.data;
+                        console.log('Updated user with avatar:', updatedUser);
+                        
+                        set({ 
+                            user: updatedUser,
+                            isLoading: false,
+                            error: null
+                        });
+                    } catch (err) {
+                        set({ 
+                            isLoading: false,
+                            error: 'Failed to upload avatar'
+                        });
+                        throw err;
                     }
                 },
                 

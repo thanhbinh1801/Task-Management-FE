@@ -1,4 +1,3 @@
-import React from "react";
 import { useWorkspaceStore } from "@/store/useWorkSpaceStore";
 import type { Workspace } from "@/store/useWorkSpaceStore";
 import { Loader } from "lucide-react";
