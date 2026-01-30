@@ -1,5 +1,5 @@
 import { useBoardStore } from "@/store/useBoardStore";
-import { Users } from "lucide-react";
+import { Star, Users } from "lucide-react";
 
 export default function BoardHeader() {
   const currentBoard = useBoardStore((state) => state.currentBoard);
