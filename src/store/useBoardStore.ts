@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware';
 import { apiClient } from '@/lib/api';
 import { boardApi } from '@/lib/board.api';
 import { useWorkspaceStore } from './useWorkSpaceStore';
-import type { Board, List, Card } from '@/components/type/type';
+import type { Board } from '@/components/type/type';
 
 interface BoardState {
   // State
@@ -28,7 +28,7 @@ interface BoardState {
   deleteList: (listId: string) => Promise<void>;
 
   // Card actions
-  createCard: (workspaceId: string, boardId: string, listId: string, data: { name: string, position: number }) => Promise<void>;
+  createCard: (boardId: string, listId: string, data: { name: string, position: number }) => Promise<void>;
   updateCard: (workspaceId: string, boardId: string, listId: string, cardId: string, data: { name?: string, position: number, listIdTarget?: string }) => Promise<void>;
   deleteCard: (cardId: string) => Promise<void>;
 
@@ -52,7 +52,7 @@ export const useBoardStore = create<BoardState>()(
           set({ isLoading: true, error: null });
         }
         try {
-          const res = await apiClient.get(
+          const res = await apiClient.get<{ data: Board | Board[] }>(
             `/workspace/${workspaceId}/board/${boardId}`
           );
 
@@ -163,7 +163,7 @@ export const useBoardStore = create<BoardState>()(
       //   },
 
 
-      createCard: async (boardId, listId, data) => {
+      createCard: async (boardId: string, listId: string, data: { name: string, position: number }) => {
         try {
           await boardApi.createCard({
             listId,

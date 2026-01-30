@@ -142,7 +142,7 @@ export function useBoardDnD(
                             fromListId,
                             active.id,
                             {
-                                name: newCards[toIndex].nameCard,
+                                name: newCards[toIndex].name,
                                 position: newPosition,
                                 listIdTarget: fromListId,
                             }
@@ -184,7 +184,7 @@ export function useBoardDnD(
                             fromListId,
                             movedCard.id,
                             {
-                                name: movedCard.nameCard,
+                                name: movedCard.name,
                                 position: newPosition,
                                 listIdTarget: toListId,
                             }

@@ -17,7 +17,7 @@ export function TemplateSection() {
 
     async function fetchTemplates() {
         try {
-            const res = await apiClient.get("/templates");
+            const res = await apiClient.get<{ data: Template[] }>("/templates");
             setTemplates(res.data.data);
             setLoading(false);
         }

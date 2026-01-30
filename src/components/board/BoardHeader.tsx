@@ -1,4 +1,5 @@
 import { useBoardStore } from "@/store/useBoardStore";
+import { Users } from "lucide-react";
 
 export default function BoardHeader() {
   const currentBoard = useBoardStore((state) => state.currentBoard);
@@ -6,12 +7,12 @@ export default function BoardHeader() {
   if (!currentBoard) return null;
 
   return (
-    <header className="sticky top-0 z-10 bg-blue-500 backdrop-blur-sm px-4 py-3">
+    <header className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3 shadow-sm">
       <div className="flex items-center justify-between">
-        {/* Left: Board Title */}
-        <div className="flex items-center gap-2">
-          <h1 className="text-white font-semibold text-lg">
-            {currentBoard.name || "Task"}
+        {/* Left: Board Title & Info */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-white font-bold text-lg px-3 py-1 hover:bg-white/10 rounded transition-colors cursor-pointer">
+            {currentBoard.name || "Board"}
           </h1>
         </div>
 
@@ -22,19 +23,19 @@ export default function BoardHeader() {
               {currentBoard.members.slice(0, 4).map((member, index) => (
                 <div
                   key={member.userId}
-                  className="relative"
+                  className="relative hover:z-50 transition-transform hover:scale-110"
                   style={{ zIndex: currentBoard.members.length - index }}
                 >
                   {member.avatarUrl ? (
                     <img
                       src={member.avatarUrl}
                       alt={member.userName}
-                      className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                      className="w-8 h-8 rounded-full border-2 border-white object-cover cursor-pointer"
                       title={member.userName}
                     />
                   ) : (
                     <div
-                      className="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold"
+                      className="w-8 h-8 rounded-full border-2 border-white bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-semibold cursor-pointer"
                       title={member.userName}
                     >
                       {member.userName?.charAt(0).toUpperCase() || "U"}
@@ -44,7 +45,9 @@ export default function BoardHeader() {
               ))}
             </div>
           )}
-          <button className="px-4 py-1.5 bg-black/70 hover:bg-black/80 text-white rounded-md transition-colors">
+          
+          <button className="flex items-center gap-2 px-4 py-1.5 bg-white/90 hover:bg-white text-gray-700 font-medium rounded transition-colors">
+            <Users className="w-4 h-4" />
             Share
           </button>
         </div>

@@ -20,7 +20,7 @@ interface ListComponentProps {
   boardId: string;
 }
 
-export default function ListComponent({ list, board, setBoard, workspaceId, boardId }: ListComponentProps) {
+export default function ListComponent({ list, board, setBoard, workspaceId: _workspaceId, boardId }: ListComponentProps) {
 
   const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({
@@ -43,8 +43,8 @@ export default function ListComponent({ list, board, setBoard, workspaceId, boar
       });
 
       // Cập nhật board với card mới
-      if (response.data?.data) {
-        const newCard = response.data.data;
+      if ((response.data as any)?.data) {
+        const newCard = (response.data as any).data;
         const updatedLists = board.lists.map((l) =>
           l.id === list.id ? { ...l, cards: [...l.cards, newCard] } : l
         );

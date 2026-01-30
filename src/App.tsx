@@ -9,6 +9,8 @@ import DashboardLayout from "./pages/layout/DashboardLayout";
 import WorkspaceItem from "./components/workspaces/WorkspaceItem";
 import BoardItem from "./components/board/BoardItem";
 import BoardLayout from "./pages/layout/boardLayout";
+import ProfileLayout from "./pages/user/ProfileLayout";
+import ProfilePage from "./pages/user/ProfilePage";
 
 export function App() {
   return (
@@ -26,6 +28,17 @@ export function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="workspace/:workspaceId" element={<WorkspaceItem />} />
+      </Route>
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfileLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProfilePage />} />
       </Route>
 
       <Route

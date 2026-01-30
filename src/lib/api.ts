@@ -61,6 +61,10 @@ axiosClient.interceptors.response.use(
         const response = await axiosClient.post('/auth/refresh-token');
         const newAccessToken = response.data.accessToken;
 
+        if (!newAccessToken) {
+          throw new Error('No access token in response');
+        }
+
         localStorage.setItem("access-token", newAccessToken);
 
         processQueue(null, newAccessToken);
