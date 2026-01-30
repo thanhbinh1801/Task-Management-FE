@@ -3,9 +3,10 @@ import { Plus, X } from "lucide-react";
 
 interface AddListButtonProps {
   onAddList: (name: string) => Promise<void>;
+  isBoardEmpty?: boolean;
 }
 
-export default function AddListButton({ onAddList }: AddListButtonProps) {
+export default function AddListButton({ onAddList, isBoardEmpty }: AddListButtonProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [listName, setListName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -103,9 +104,9 @@ export default function AddListButton({ onAddList }: AddListButtonProps) {
     <button
       onClick={() => setIsAdding(true)}
       style={{
-        width: 200,
+        width: isBoardEmpty ? "100%" : 200,
         padding: 12,
-        background: "#eee",
+        background: isBoardEmpty ? "#f1f2f4" : "#eee",
         border: "none",
         borderRadius: 8,
         cursor: "pointer",
@@ -114,7 +115,18 @@ export default function AddListButton({ onAddList }: AddListButtonProps) {
         gap: 8,
         fontSize: 14,
         fontWeight: 500,
-        color: "#172b4d",
+        color: "#172b4d", 
+        transition: "background 0.2s ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = isBoardEmpty
+          ? "#e2e4e7"
+          : "#e2e4e7";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = isBoardEmpty
+          ? "#f1f2f4"
+          : "#eee";
       }}
     >
       <Plus size={18} />

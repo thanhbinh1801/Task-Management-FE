@@ -1,29 +1,29 @@
-import type { Board } from "@/components/type/type";
+import { useBoardStore } from "@/store/useBoardStore";
 
-interface BoardHeaderProps {
-  board: Board;
-}
+export default function BoardHeader() {
+  const currentBoard = useBoardStore((state) => state.currentBoard);
 
-export default function BoardHeader({ board }: BoardHeaderProps) {
+  if (!currentBoard) return null;
+
   return (
     <header className="sticky top-0 z-10 bg-blue-500 backdrop-blur-sm px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Left: Board Title */}
         <div className="flex items-center gap-2">
           <h1 className="text-white font-semibold text-lg">
-            {board?.name || "Task"}
+            {currentBoard.name || "Task"}
           </h1>
         </div>
 
         {/* Right: Members + Share */}
         <div className="flex items-center gap-3">
-          {board?.members && board.members.length > 0 && (
+          {currentBoard.members && currentBoard.members.length > 0 && (
             <div className="flex -space-x-2">
-              {board.members.slice(0, 4).map((member, index) => (
+              {currentBoard.members.slice(0, 4).map((member, index) => (
                 <div
                   key={member.userId}
                   className="relative"
-                  style={{ zIndex: board.members.length - index }}
+                  style={{ zIndex: currentBoard.members.length - index }}
                 >
                   {member.avatarUrl ? (
                     <img

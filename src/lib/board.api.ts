@@ -1,41 +1,41 @@
 import { apiClient } from "./api";
 
 export const boardApi = {
-  createList(data: { workspaceId: string; boardId: string; nameList: string }) {
+  createList(data: { boardId: string; nameList: string }) {
     return apiClient.post(
-      `workspace/${data.workspaceId}/board/${data.boardId}/list`,
-      { nameList: data.nameList }
+      `/list`,
+      { name: data.nameList, boardId: data.boardId }
     );
   },
-  createCard(data: { 
-    workspaceId: string; 
-    boardId: string; 
-    listId: string; 
-    nameCard: string 
+  updateList(data: {
+    boardId: string,
+    listId: string,
+    nameList?: string,
+    position: number
+  }) {
+    return apiClient.put(`/list/${data.listId}/`,
+      { name: data.nameList, position: data.position, boardId: data.boardId });
+  },
+
+  createCard(data: {
+    listId: string;
+    boardId: string;
+    nameCard: string
   }) {
     return apiClient.post(
-      `workspace/${data.workspaceId}/board/${data.boardId}/list/${data.listId}/card`,
-      { nameCard: data.nameCard }
+      `/list/${data.listId}/card`,
+      { boardId: data.boardId, name: data.nameCard }
     );
   },
-  updateList ( data: { 
-    workspaceId: string, 
-    boardId: string, 
-    listId: string, 
-    nameList?: string, 
-    position: number } ) {
-    return apiClient.put(`workspace/${data.workspaceId}/board/${data.boardId}/list/${data.listId}/`, 
-      { nameList: data.nameList, position: data.position });
-  },
-  updateCard ( data: { 
-    workspaceId: string, 
-    boardId: string, 
-    listId: string, 
-    cardId: string, 
-    nameCard: string, 
-    position: number, 
-    listIdTarget: string } ) {
-    return apiClient.put(`workspace/${data.workspaceId}/board/${data.boardId}/list/${data.listId}/card/${data.cardId}/`,
-       { nameCard: data.nameCard, position: data.position, listIdTarget: data.listIdTarget });
+  updateCard(data: {
+    boardId: string,
+    listId: string,
+    cardId: string,
+    nameCard: string,
+    position: number,
+    listIdTarget: string
+  }) {
+    return apiClient.put(`list/${data.listId}/card/${data.cardId}/`,
+      { name: data.nameCard, position: data.position, listIdTarget: data.listIdTarget, boardId: data.boardId });
   }
 }
