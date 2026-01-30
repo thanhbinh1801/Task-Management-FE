@@ -1,6 +1,7 @@
 export type Board = {
   id: string;
-  name: string; 
+  name: string;
+  workspaceId: string;
   lists: List[],
   members: Member[]
 };
@@ -13,7 +14,7 @@ export type Member = {
 
 export type List = {
   id: string;
-  name:string;
+  name: string;
   position: number;
   cards: Card[]
 }

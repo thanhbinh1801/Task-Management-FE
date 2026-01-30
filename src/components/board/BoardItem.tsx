@@ -1,89 +1,179 @@
 import { useBoardStore } from "@/store/useBoardStore";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { Plus } from "lucide-react";
+
+import {
+  DndContext,
+  DragOverlay,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  defaultDropAnimationSideEffects,
+  closestCorners,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
+import { useBoardDnD } from "@/hooks/useBoardDnD";
+import { useState } from "react";
+import ListComponent from "../list/list";
+import { createPortal } from "react-dom";
+import CardComponent from "../card/card";
+
+import AddListButton from "../list/AddListButton";
+
 
 export default function BoardItem() {
   const { workspaceId, boardId } = useParams<{
     workspaceId: string;
     boardId: string;
   }>();
+
+
   const currentBoard = useBoardStore((state) => state.currentBoard);
-  const fetchBoardById = useBoardStore((state) => state.fetchBoardById);
+  const setCurrentBoard = useBoardStore((state) => state.setCurrentBoard);
+  const updateList = useBoardStore((state) => state.updateList);
+  const updateCard = useBoardStore((state) => state.updateCard);
 
-  useEffect(() => {
-    if (workspaceId && boardId) {
-      fetchBoardById(workspaceId, boardId);
+  const { handleDragEnd } = useBoardDnD(
+    currentBoard,
+    setCurrentBoard,
+    workspaceId,
+    boardId,
+    { updateList, updateCard }
+  );
+
+  // State for drag overlay
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeType, setActiveType] = useState<"LIST" | "CARD" | null>(null);
+  const [activeItem, setActiveItem] = useState<any>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    setActiveType(active.data.current?.type);
+
+    // Find the item being dragged
+    if (active.data.current?.type === "LIST") {
+      setActiveItem(currentBoard?.lists?.find(l => l.id === active.id));
+    } else if (active.data.current?.type === "CARD") {
+      const list = currentBoard?.lists?.find(l => l.cards?.some(c => c.id === active.id));
+      const card = list?.cards?.find(c => c.id === active.id);
+      setActiveItem(card);
     }
-  }, [workspaceId, boardId, fetchBoardById]);
+  };
 
-  if (!currentBoard) {
+  const dropAnimation = {
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: "0.5",
+        },
+      },
+    }),
+  };
+
+  const createList = useBoardStore((state) => state.createList);
+  const isLoading = useBoardStore((state) => state.isLoading);
+  const error = useBoardStore((state) => state.error);
+
+  const handleAddList = async (name: string) => {
+    if (boardId && workspaceId) {
+      await createList(workspaceId, boardId, { name });
+    }
+  };
+
+
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-100px)]">
         <div className="text-gray-500">Loading board...</div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-100px)]">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!currentBoard) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[calc(100vh-100px)]">
+        <div className="text-gray-500">Board not found</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="px-6 py-4 bg-blue-600">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold text-white">{currentBoard.nameBoard}</h1>
-        </div>
-      </div>
-
-      <div className="px-6 pb-6 overflow-x-auto">
-        <div className="flex gap-4 items-start">
-          {currentBoard.lists && currentBoard.lists.length > 0 ? (
-            currentBoard.lists.map((list) => (
-              <div
-                key={list.id}
-                className="bg-gray-100 rounded-xl p-3 w-[120px] h-[200px] flex-shrink-0"
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragEnd={(event) => {
+        handleDragEnd(event);
+        setActiveId(null);
+        setActiveType(null);
+        setActiveItem(null);
+      }}
+    >
+      <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pt-4">
+          <div className="px-6 pb-6 overflow-x-auto">
+            <div className="flex gap-4 items-start">
+              <SortableContext
+                items={currentBoard.lists?.map((list) => list.id) || []}
+                strategy={horizontalListSortingStrategy}
               >
-                {/* List Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-800">{list.nameList}</h3>
-                </div>
+                {currentBoard.lists?.map((list) => (
+                  <ListComponent
+                    key={list.id}
+                    list={list}
+                    board={currentBoard}
+                    setBoard={setCurrentBoard}
+                    workspaceId={workspaceId!}
+                    boardId={boardId!}
+                  />
+                ))}
+              </SortableContext>
 
-                <div className="space-y-2">
-                  {list.cards && list.cards.length > 0 ? (
-                    list.cards.map((card) => (
-                      <div
-                        key={card.id}
-                        className="bg-white rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                      >
-                        <p className="text-sm text-gray-800">{card.nameCard}</p>
-                        {card.isComplete && (
-                          <span className="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded">
-                            Completed
-                          </span>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-gray-500 text-center py-2">
-                      No cards yet
-                    </div>
-                  )}
-                </div>
-
-                <button className="w-full mt-2 px-3 py-2 text-left text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2">
-                  <Plus size={16} />
-                  <span className="text-sm">Add a card</span>
-                </button>
+              <div className="w-[272px] flex-shrink-0">
+                <AddListButton
+                  onAddList={handleAddList}
+                  isBoardEmpty={!currentBoard.lists || currentBoard.lists.length === 0}
+                />
               </div>
-            ))
-          ) : (
-            <div className="text-gray-500">No lists yet</div>
-          )}
-
-<button className="bg-gray-100 hover:bg-gray-200 rounded-xl p-3 w-80 flex-shrink-0 transition-colors flex items-center gap-2 text-gray-700">
-            <Plus size={18} />
-            <span className="font-medium">Add another list</span>
-          </button>
+            </div>
+          </div>
         </div>
+        {createPortal(
+          <DragOverlay dropAnimation={dropAnimation}>
+            {activeId && activeType === "LIST" && activeItem && (
+              <ListComponent
+                list={activeItem}
+                board={currentBoard}
+                setBoard={setCurrentBoard}
+                workspaceId={workspaceId!}
+                boardId={boardId!}
+              />
+            )}
+            {activeId && activeType === "CARD" && activeItem && (
+              <CardComponent card={activeItem} listId={activeItem.listId || ""} />
+            )}
+          </DragOverlay>,
+          document.body
+        )}
       </div>
-    </div>
+    </DndContext>
   );
 }

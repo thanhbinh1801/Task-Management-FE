@@ -7,20 +7,20 @@ import { CSS } from "@dnd-kit/utilities";
 import CardComponent from "../card/card.tsx";
 import AddCardButton from "../card/AddCardButton";
 import { boardApi } from "@/lib/board.api";
-import type { List } from "@/components/type/type.ts";
-import { useOutletContext } from "react-router-dom";
-import type { Board } from "@/components/type/type";
+import type { List, Board } from "@/components/type/type.ts";
 
-interface BoardOutletContext {
+
+
+
+interface ListComponentProps {
+  list: List;
   board: Board;
   setBoard: (board: Board) => void;
   workspaceId: string;
   boardId: string;
 }
 
-export default function ListComponent({ list }: { list: List }) {
-  const { board, setBoard, workspaceId, boardId } =
-    useOutletContext<BoardOutletContext>();
+export default function ListComponent({ list, board, setBoard, workspaceId, boardId }: ListComponentProps) {
 
   const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({
@@ -37,7 +37,6 @@ export default function ListComponent({ list }: { list: List }) {
   const handleAddCard = async (nameCard: string) => {
     try {
       const response = await boardApi.createCard({
-        workspaceId,
         boardId,
         listId: list.id,
         nameCard,
